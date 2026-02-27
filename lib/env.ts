@@ -1,13 +1,9 @@
-import { z } from "zod";
+// ⚠️  DEPRECATED — do not import from this file.
+//
+// This file has been split into:
+//   lib/env.client.ts  — NEXT_PUBLIC_ vars (safe in client components)
+//   lib/env.server.ts  — server-only secrets (route.ts / server components only)
+//
+// BUILD agents: import from the appropriate file for your context.
 
-const envSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-});
-
-// Set SKIP_ENV_VALIDATION=1 during CI/build to skip validation
-export const env =
-  process.env.SKIP_ENV_VALIDATION === "1"
-    ? (process.env as unknown as z.infer<typeof envSchema>)
-    : envSchema.parse(process.env);
+export {};

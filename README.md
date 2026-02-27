@@ -27,3 +27,15 @@ node scripts/customize.js --manifest='{"name":"My App","description":"My descrip
 ```bash
 vercel --prod --yes
 ```
+
+## Build Patterns
+
+Before writing any product code, read:
+`/home/openclaw3/.openclaw/workspace/shared/findings/build-patterns.md`
+
+Key rules:
+- Import server env vars only from `lib/env.server.ts` (never in client components)
+- Import client env vars from `lib/env.client.ts`
+- Define all Storage bucket names in `lib/storage.ts`
+- Use `upsert()` not `insert()` on tables with auth triggers
+- Role checks: `['ROLE_A','ROLE_B'].includes(role)` not `role !== 'ROLE_A'`
