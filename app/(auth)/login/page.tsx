@@ -3,85 +3,177 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { Trophy, Mail, Lock, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [magicEmail, setMagicEmail] = useState("");
+  const [tab, setTab] = useState<'password' | 'magic'>('password');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handlePasswordLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push("/");
+      router.push("/admin");
       router.refresh();
     }
   }
 
+  async function handleMagicLink(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOtp({
+      email: magicEmail,
+      options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },
+    });
+
+    setLoading(false);
+    if (error) {
+      setError(error.message);
+    } else {
+      setSuccess('Check your email for a magic link!');
+    }
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md space-y-8 p-8">
-        <h1 className="text-2xl font-bold text-center">Sign in</h1>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="mt-1 w-full rounded border px-3 py-2"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="mt-1 w-full rounded border px-3 py-2"
-            />
-          </div>
-
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded bg-black py-2 text-white disabled:opacity-50"
+    <div
+      className="flex min-h-screen items-center justify-center p-4"
+      style={{ background: 'linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, var(--color-primary-light) 100%)' }}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl p-8 shadow-2xl"
+        style={{ backgroundColor: 'var(--color-surface)' }}
+      >
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <div
+            className="flex items-center justify-center w-12 h-12 rounded-xl"
+            style={{ backgroundColor: 'var(--color-primary)' }}
           >
-            {loading ? "Signing in…" : "Sign in"}
-          </button>
-        </form>
+            <Trophy className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <div className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>USATKD Rankings</div>
+            <div className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Admin Access</div>
+          </div>
+        </div>
 
-        <p className="text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="underline">
-            Sign up
-          </Link>
+        {/* Tabs */}
+        <div className="flex gap-1 mb-6 p-1 rounded-lg" style={{ backgroundColor: 'var(--color-surface-alt)' }}>
+          {(['password', 'magic'] as const).map(t => (
+            <button
+              key={t}
+              onClick={() => { setTab(t); setError(null); setSuccess(null); }}
+              className="flex-1 py-2 rounded-md text-sm font-medium transition-colors"
+              style={{
+                backgroundColor: tab === t ? 'var(--color-surface)' : 'transparent',
+                color: tab === t ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
+                boxShadow: tab === t ? 'var(--shadow-card)' : 'none',
+              }}
+            >
+              {t === 'password' ? 'Password' : 'Magic Link'}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'password' ? (
+          <form onSubmit={handlePasswordLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-secondary)' }}>Email</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--color-text-muted)' }} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  required
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border focus:outline-none text-sm"
+                  style={{ border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text-primary)' }}
+                  placeholder="admin@usatkd.org"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-secondary)' }}>Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--color-text-muted)' }} />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border focus:outline-none text-sm"
+                  style={{ border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text-primary)' }}
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <p className="text-sm" style={{ color: 'var(--color-error)' }}>{error}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ backgroundColor: 'var(--color-primary)' }}
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+              {loading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleMagicLink} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1" style={{ color: 'var(--color-text-secondary)' }}>Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--color-text-muted)' }} />
+                <input
+                  type="email"
+                  value={magicEmail}
+                  onChange={e => setMagicEmail(e.target.value)}
+                  required
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border focus:outline-none text-sm"
+                  style={{ border: '1px solid var(--color-border)', backgroundColor: 'var(--color-surface-alt)', color: 'var(--color-text-primary)' }}
+                  placeholder="admin@usatkd.org"
+                />
+              </div>
+            </div>
+
+            {error && <p className="text-sm" style={{ color: 'var(--color-error)' }}>{error}</p>}
+            {success && <p className="text-sm" style={{ color: 'var(--color-success)' }}>{success}</p>}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ backgroundColor: 'var(--color-primary)' }}
+            >
+              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+              {loading ? 'Sending...' : 'Send Magic Link'}
+            </button>
+          </form>
+        )}
+
+        <p className="text-center text-xs mt-6" style={{ color: 'var(--color-text-muted)' }}>
+          Admin access only. Contact your administrator for credentials.
         </p>
       </div>
     </div>
