@@ -1,8 +1,10 @@
+// Supabase Storage bucket name constants
+// NEVER hardcode bucket names inline — always import from here
+
 export const BUCKETS = {
-  venueAssets: 'venue-assets',   // public — venue cover images, floor plan images
-  eventCovers: 'event-covers',   // public — event hero images
-  seatMaps:    'seat-maps',      // private — Konva.js map JSON configs
-  tickets:     'tickets',        // private — ticket PDFs / QR codes
+  avatars: 'sirena-avatars',
+  covers: 'sirena-covers',
+  products: 'sirena-products',
 } as const;
 
 export type BucketName = typeof BUCKETS[keyof typeof BUCKETS];

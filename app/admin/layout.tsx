@@ -1,23 +1,14 @@
-import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import Sidebar from '@/components/navigation/Sidebar';
+import { createClient } from '@/lib/supabase/server';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
+  if (!user) redirect('/auth/login');
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('user_id', user.id).single();
-  if (profile?.role !== 'platform_admin') {
-    redirect('/dashboard');
-  }
+  const { data: creator } = await supabase.from('sirena_creators').select('id, display_name, username, plan, is_admin').eq('id', user.id).single();
+  if (!creator || !creator.is_admin) redirect('/dashboard');
 
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#09090B' }}>
-      <Sidebar role="platform_admin" />
-      <main style={{ flex: 1, minHeight: '100vh', overflowY: 'auto' }}>
-        {children}
-      </main>
-    </div>
-  );
+  return <DashboardShell creator={creator}>{children}</DashboardShell>;
 }

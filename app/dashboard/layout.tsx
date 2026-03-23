@@ -1,20 +1,19 @@
-import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import Sidebar from '@/components/navigation/Sidebar';
+import { createClient } from '@/lib/supabase/server';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
+  if (!user) redirect('/auth/login');
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('user_id', user.id).single();
+  const { data: creator } = await supabase
+    .from('sirena_creators')
+    .select('id, display_name, username, plan, is_admin')
+    .eq('id', user.id)
+    .single();
 
-  return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#09090B' }}>
-      <Sidebar role={profile?.role || 'fan'} />
-      <main style={{ flex: 1, minHeight: '100vh', overflowY: 'auto' }}>
-        {children}
-      </main>
-    </div>
-  );
+  if (!creator) redirect('/auth/login');
+
+  return <DashboardShell creator={creator}>{children}</DashboardShell>;
 }

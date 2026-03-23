@@ -1,148 +1,100 @@
-// Ticketing Platform Types
+// Sirena Phase 2 — TypeScript types
 
-export interface Profile {
-  user_id: string;
-  email: string;
-  full_name: string | null;
-  role: 'fan' | 'organizer' | 'platform_admin';
+export interface SirenaCreator {
+  id: string;
+  username: string;
+  display_name: string;
+  bio: string | null;
+  niche: string | null;
   avatar_url: string | null;
+  locale: 'en' | 'es';
+  plan: 'free' | 'pro';
+  page_theme_color: string;
+  page_bg: string;
+  page_font: string;
+  page_link_text: string | null;
+  share_enabled: boolean;
+  payout_email: string | null;
+  payout_threshold: number;
+  stripe_account_id: string | null;
+  is_admin: boolean;
+  onboarding_done: boolean;
   created_at: string;
   updated_at: string;
 }
 
-export interface Venue {
-  venue_id: string;
-  organizer_id: string;
-  name: string;
-  address: string;
-  city: string;
-  state: string;
-  zip: string;
-  capacity: number;
-  map_config: Record<string, unknown> | null;
-  image_url: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Section {
-  section_id: string;
-  venue_id: string;
-  name: string;
-  row_count: number;
-  seat_count_per_row: number;
-  base_price: number;
-  section_type: 'standard' | 'vip' | 'accessible' | 'floor' | 'suite';
-  color_hex: string | null;
-  polygon_coords: Record<string, unknown> | null;
-  created_at: string;
-}
-
-export interface Seat {
-  seat_id: string;
-  section_id: string;
-  venue_id: string;
-  row_label: string;
-  seat_number: string;
-  seat_type: 'standard' | 'vip' | 'accessible' | 'aisle';
-  x_pos: number | null;
-  y_pos: number | null;
-  created_at: string;
-}
-
-export interface TixEvent {
-  event_id: string;
-  venue_id: string;
-  organizer_id: string;
+export interface SirenaLink {
+  id: string;
+  creator_id: string;
+  link_type: 'link' | 'instagram' | 'youtube' | 'tiktok' | 'email' | 'other';
   title: string;
-  description: string | null;
-  event_type: 'concert' | 'sports' | 'conference' | 'other';
-  event_date: string;
-  doors_open_at: string | null;
-  status: 'draft' | 'published' | 'on_sale' | 'sold_out' | 'cancelled' | 'completed';
-  cover_image_url: string | null;
-  min_price: number | null;
-  max_price: number | null;
-  tags: string[] | null;
+  url: string;
+  visible: boolean;
+  show_thumbnail: boolean;
+  position: number;
   created_at: string;
   updated_at: string;
-  // Joined fields
-  venues?: Venue;
 }
 
-export interface TicketTier {
-  tier_id: string;
-  event_id: string;
-  section_id: string;
+export interface SirenaProduct {
+  id: string;
+  creator_id: string;
   name: string;
-  price: number;
-  fee_amount: number;
-  max_per_order: number;
-  total_capacity: number | null;
-  sold_count: number;
-  created_at: string;
-  // Joined fields
-  sections?: Section;
-}
-
-export interface SeatInventory {
-  inventory_id: string;
-  event_id: string;
-  seat_id: string;
-  tier_id: string | null;
-  status: 'available' | 'locked' | 'sold' | 'reserved' | 'blocked';
-  locked_by: string | null;
-  locked_until: string | null;
-  created_at: string;
-  // Joined fields
-  seats?: Seat;
-}
-
-export interface Order {
-  order_id: string;
-  user_id: string | null;
-  event_id: string;
-  status: 'pending' | 'confirmed' | 'cancelled' | 'refunded';
-  subtotal: number;
-  fee_total: number;
-  total: number;
-  stripe_payment_intent_id: string | null;
-  stripe_checkout_session_id: string | null;
-  guest_email: string | null;
-  guest_name: string | null;
+  description: string | null;
+  product_type: 'pdf' | 'video' | 'audio' | 'bundle' | 'course' | 'preset';
+  price_cents: number;
+  is_free: boolean;
+  access: 'everyone' | 'subscribers';
+  status: 'draft' | 'active' | 'paused';
+  cover_image_url: string | null;
+  file_url: string | null;
+  stripe_product_id: string | null;
+  stripe_price_id: string | null;
   created_at: string;
   updated_at: string;
-  // Joined fields
-  tix_events?: TixEvent;
-  tickets?: Ticket[];
 }
 
-export interface Ticket {
-  ticket_id: string;
-  order_id: string;
-  event_id: string;
-  seat_id: string | null;
-  tier_id: string | null;
-  user_id: string | null;
-  price_paid: number;
-  qr_code: string;
-  status: 'valid' | 'used' | 'cancelled' | 'transferred';
+export interface SirenaSale {
+  id: string;
+  creator_id: string;
+  product_id: string | null;
+  customer_email: string;
+  amount_cents: number;
+  platform_fee_cents: number;
+  net_cents: number;
+  status: 'completed' | 'pending' | 'refunded';
+  stripe_payment_intent_id: string | null;
   created_at: string;
-  // Joined fields
-  tix_events?: TixEvent;
-  seats?: Seat;
-  ticket_tiers?: TicketTier;
-  orders?: Order;
 }
 
-export interface CartSeat {
-  seatId: string;
-  inventoryId: string;
-  sectionName: string;
-  rowLabel: string;
-  seatNumber: string;
-  seatType: string;
-  price: number;
-  fee: number;
-  tierId: string;
+export interface SirenaPayout {
+  id: string;
+  creator_id: string;
+  amount_cents: number;
+  payout_email: string;
+  status: 'requested' | 'processing' | 'paid' | 'failed';
+  notes: string | null;
+  created_at: string;
+  processed_at: string | null;
+}
+
+export interface SirenaNotificationPrefs {
+  creator_id: string;
+  new_sale: boolean;
+  payout_processed: boolean;
+  new_follower: boolean;
+  monthly_summary: boolean;
+  tips_updates: boolean;
+}
+
+export interface SirenaWaitlist {
+  waitlist_id: string;
+  email: string;
+  niche: string;
+  locale: string;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  ip_country: string | null;
+  created_at: string;
 }

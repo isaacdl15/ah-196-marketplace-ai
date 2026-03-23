@@ -4,20 +4,27 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Public routes - no auth needed
+  // Public routes — no auth needed
   const isPublicRoute =
-    pathname.startsWith('/events') ||
-    pathname.startsWith('/api/events') ||
-    pathname.startsWith('/api/venues') ||
-    pathname.startsWith('/api/checkout/webhook') ||
     pathname.startsWith('/api/health') ||
-    pathname.startsWith('/auth/confirm') ||
-    pathname === '/' ||
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/signup');
+    pathname.startsWith('/api/page-view') ||
+    pathname.startsWith('/api/link-click') ||
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/auth/') ||
+    pathname === '/';
 
-  if (isPublicRoute) {
+  // Dynamic creator pages (/@username or /username patterns)
+  // Anything that doesn't start with /dashboard, /admin, /api, /auth, /onboarding
+  const isDashboard = pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/onboarding');
+
+  if (isPublicRoute && !isDashboard) {
     return NextResponse.next();
+  }
+
+  // Check if it looks like a username route (single path segment, no special prefix)
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length === 1 && !['api', 'auth', 'dashboard', 'admin', 'onboarding', '_next'].includes(segments[0])) {
+    return NextResponse.next(); // Public creator page
   }
 
   // Protected routes need session

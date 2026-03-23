@@ -4,24 +4,16 @@ import { z } from 'zod';
 
 const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  SPORT80_API_TOKEN: z.string().optional(),
-  SPORT80_API_BASE_URL: z.string().optional(),
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),
   RESEND_API_KEY: z.string().optional(),
-  QSTASH_TOKEN: z.string().optional(),
-  QSTASH_CURRENT_SIGNING_KEY: z.string().optional(),
-  QSTASH_NEXT_SIGNING_KEY: z.string().optional(),
+  ANTHROPIC_MODEL: z.string().optional(),
 });
 
 export const serverEnv = serverEnvSchema.parse({
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-  SPORT80_API_TOKEN: process.env.SPORT80_API_TOKEN,
-  SPORT80_API_BASE_URL: process.env.SPORT80_API_BASE_URL,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
   RESEND_API_KEY: process.env.RESEND_API_KEY,
-  QSTASH_TOKEN: process.env.QSTASH_TOKEN,
-  QSTASH_CURRENT_SIGNING_KEY: process.env.QSTASH_CURRENT_SIGNING_KEY,
-  QSTASH_NEXT_SIGNING_KEY: process.env.QSTASH_NEXT_SIGNING_KEY,
+  ANTHROPIC_MODEL: process.env.ANTHROPIC_MODEL,
 });
