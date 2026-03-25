@@ -27,6 +27,8 @@ const tokens = {
   '__PROJECT_NAME__': name,
   '__PROJECT_DESCRIPTION__': description,
   '__PRIMARY_COLOR__': primaryColor,
+  '__STRIPE_PRICE_ID_MONTHLY__': manifest.stripePriceIdMonthly || 'price_PLACEHOLDER',
+  '__STRIPE_PRICE_ID_YEARLY__': manifest.stripePriceIdYearly || 'price_PLACEHOLDER',
 };
 
 // Files to process
@@ -52,6 +54,9 @@ targets.forEach(file => {
 const envContent = `NEXT_PUBLIC_SUPABASE_URL=${supabaseUrl}
 NEXT_PUBLIC_SUPABASE_ANON_KEY=${supabaseAnonKey}
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+STRIPE_SECRET_KEY=${manifest.stripeSecretKey || 'sk_test_...'}
+STRIPE_WEBHOOK_SECRET=${manifest.stripeWebhookSecret || 'whsec_...'}
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${manifest.stripePublishableKey || 'pk_test_...'}
 `;
 fs.writeFileSync('.env.local', envContent);
 console.log('✓ .env.local generated');
