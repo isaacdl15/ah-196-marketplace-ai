@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 
@@ -60,7 +61,7 @@ export default function Navbar() {
           }}
         >
           {/* Logo */}
-          <a
+          <Link
             href="/"
             style={{
               fontFamily: "'Instrument Sans', system-ui, sans-serif",
@@ -72,7 +73,7 @@ export default function Navbar() {
             }}
           >
             marketplace.ai
-          </a>
+          </Link>
 
           {/* Desktop nav */}
           <nav style={{ display: 'flex', alignItems: 'center', gap: '32px' }} className="hidden md:flex">
