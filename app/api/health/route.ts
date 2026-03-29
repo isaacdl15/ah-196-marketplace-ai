@@ -1,5 +1,4 @@
-import { NextResponse } from 'next/server';
-
+export const runtime = 'nodejs';
 export async function GET() {
-  return NextResponse.json({ ok: true, service: 'sirena', version: '2.0.0', ts: new Date().toISOString() });
+  return Response.json({ status: 'ok', timestamp: new Date().toISOString() });
 }

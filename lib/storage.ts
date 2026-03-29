@@ -2,9 +2,8 @@
 // NEVER hardcode bucket names inline — always import from here
 
 export const BUCKETS = {
-  avatars: 'sirena-avatars',
-  covers: 'sirena-covers',
-  products: 'sirena-products',
+  templateImages: 'template-images',
+  landingAssets: 'landing-page-assets',
 } as const;
 
 export type BucketName = typeof BUCKETS[keyof typeof BUCKETS];
