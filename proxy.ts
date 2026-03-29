@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-// Simple passthrough middleware — all routes are public for this landing page
-export async function middleware(_request: NextRequest) {
+// Simple passthrough proxy — all routes are public for this landing page
+export async function proxy(_request: NextRequest) {
   return NextResponse.next();
 }
 
