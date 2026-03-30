@@ -19,15 +19,16 @@ export default async function PayoutsPage() {
 
   const admin = createAdminClient();
 
-  // Get payout history
-  const { data: payouts } = profile
+  // Get payout history — graceful fallback if mp_payouts table not yet migrated
+  const payoutsResult = profile
     ? await admin
         .from('mp_payouts')
         .select('id, amount_cents, status, payout_method, stripe_payout_id, created_at')
         .eq('profile_id', profile.id)
         .order('created_at', { ascending: false })
         .limit(50)
-    : { data: [] };
+    : { data: [], error: null };
+  const payouts = payoutsResult.data ?? [];
 
   // Calculate available balance
   const { data: sellerTemplates } = profile
@@ -36,18 +37,21 @@ export default async function PayoutsPage() {
 
   const templateIds = (sellerTemplates ?? []).map((t: { id: string }) => t.id);
 
-  const [{ data: completedPurchases }, { data: paidOut }] = await Promise.all([
+  const [completedPurchasesResult, paidOutResult] = await Promise.all([
     templateIds.length
       ? admin.from('mp_purchases').select('amount_cents').in('template_id', templateIds).eq('status', 'completed')
-      : { data: [] },
+      : Promise.resolve({ data: [], error: null }),
     profile
       ? admin.from('mp_payouts').select('amount_cents').eq('profile_id', profile.id).in('status', ['requested', 'processing', 'paid'])
-      : { data: [] },
+      : Promise.resolve({ data: [], error: null }),
   ]);
 
-  const totalEarnings = (completedPurchases ?? []).reduce((s: number, p: { amount_cents: number }) => s + (p.amount_cents ?? 0), 0);
+  const completedPurchases = completedPurchasesResult.data ?? [];
+  const paidOut = paidOutResult.data ?? [];
+
+  const totalEarnings = completedPurchases.reduce((s: number, p: { amount_cents: number }) => s + (p.amount_cents ?? 0), 0);
   const netEarnings = Math.round(totalEarnings * 0.7);
-  const alreadyPaidOut = (paidOut ?? []).reduce((s: number, p: { amount_cents: number }) => s + (p.amount_cents ?? 0), 0);
+  const alreadyPaidOut = paidOut.reduce((s: number, p: { amount_cents: number }) => s + (p.amount_cents ?? 0), 0);
   const availableBalance = Math.max(0, netEarnings - alreadyPaidOut);
 
   return (
