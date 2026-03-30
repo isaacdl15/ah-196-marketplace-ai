@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { createAdminClient } from '@/lib/supabase/admin';
 import { BarChart3, DollarSign, Download, Users, TrendingUp, Package } from 'lucide-react';
 

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { createClient } from '@/lib/supabase/server';
 import { Trophy, Users, Gift, Zap, Crown } from 'lucide-react';
 
