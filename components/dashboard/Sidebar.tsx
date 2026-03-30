@@ -5,7 +5,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import {
   LayoutDashboard, Package, DollarSign, BarChart3, Settings,
-  ShieldCheck, Users, TrendingUp, CreditCard, X, LogOut, ShoppingBag, Upload
+  ShieldCheck, Users, TrendingUp, CreditCard, X, LogOut, ShoppingBag, Upload,
+  Gift, ListChecks
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -31,9 +32,12 @@ const NAV_MAIN = [
 
 const NAV_ADMIN = [
   { href: '/admin', label: 'Admin overview', icon: ShieldCheck },
-  { href: '/admin/waitlist', label: 'Waitlist', icon: Users },
+  { href: '/admin/waitlist', label: 'Waitlist', icon: ListChecks },
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/templates', label: 'All Templates', icon: TrendingUp },
+  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/admin/referrals', label: 'Referrals', icon: Gift },
+  { href: '/admin/settings', label: 'Settings', icon: Settings },
 ];
 
 function initials(name: string) {
