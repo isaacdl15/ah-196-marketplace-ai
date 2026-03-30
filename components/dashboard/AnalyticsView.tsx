@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, Eye, MousePointerClick, Users, TrendingUp } from 'lucide-react';
+import { BarChart3, Eye, MousePointerClick, Users, TrendingUp, Globe } from 'lucide-react';
 
 interface Props {
   totalViews: number;
@@ -127,7 +127,7 @@ export default function AnalyticsView({ totalViews, totalClicks, ctr, topLinks, 
                 {countries.map(({ country, count }, i) => (
                   <tr key={country} style={{ borderBottom: i < countries.length - 1 ? '1px solid #E8DDD2' : 'none', background: i % 2 === 0 ? 'white' : '#FDFAF6' }}>
                     <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 500, color: '#1A1208' }}>
-                      {FLAG_MAP[country] ?? '🌍'} {country}
+                      {FLAG_MAP[country] ?? <Globe size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '4px' }} />} {country}
                     </td>
                     <td style={{ padding: '12px 16px', fontSize: '14px', color: '#1A1208' }}>{count.toLocaleString()}</td>
                     <td style={{ padding: '12px 16px', fontSize: '14px', color: '#9E8B7A' }}>
