@@ -5,7 +5,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public routes — always allowed
-  const publicPaths = ['/', '/browse', '/privacy', '/terms', '/auth', '/template', '/referrals', '/api'];
+  const publicPaths = ['/', '/browse', '/privacy', '/terms', '/auth', '/template', '/templates', '/referrals', '/api', '/seller', '/checkout'];
   const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith(p + '/'));
   if (isPublic) return NextResponse.next();
 

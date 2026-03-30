@@ -133,8 +133,9 @@ function TemplateCard({ template }: { template: Template }) {
   const rating = Number(template.rating_avg ?? 0);
 
   return (
-    <Link href={`/template/${template.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
+    <Link href={`/templates/${template.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
       <div
+        data-testid="template-card"
         style={{
           background: '#FFFFFF',
           border: '1px solid #E7E5E4',

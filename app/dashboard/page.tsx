@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { DollarSign, Package, ShoppingBag, Star } from 'lucide-react';
+import { DollarSign, Package, ShoppingBag, Star, AlertTriangle, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
@@ -9,11 +9,14 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from('mp_profiles')
-    .select('id')
+    .select('id, kyc_status, stripe_onboarded, stripe_account_id')
     .eq('user_id', user.id)
     .single();
 
   const profileId = profile?.id;
+  const kycStatus = profile?.kyc_status ?? 'pending';
+  const stripeOnboarded = profile?.stripe_onboarded ?? false;
+  const stripeAccountId = profile?.stripe_account_id;
 
   const [{ data: templates }, { data: purchases }] = await Promise.all([
     profileId
@@ -43,6 +46,43 @@ export default async function DashboardPage() {
 
   return (
     <div>
+      {/* KYC Status Banner */}
+      {kycStatus === 'pending' && (
+        <div style={{ background: '#FEF3C7', border: '1px solid #FCD34D', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <AlertTriangle size={20} color="#D97706" style={{ flexShrink: 0 }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: '#92400E' }}>Account under review</div>
+            <div style={{ fontSize: '13px', color: '#B45309', marginTop: '2px' }}>
+              Your seller account is being reviewed. You&apos;ll be notified once approved. Publishing is disabled until review is complete.
+            </div>
+          </div>
+        </div>
+      )}
+      {kycStatus === 'rejected' && (
+        <div style={{ background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <AlertTriangle size={20} color="#DC2626" style={{ flexShrink: 0 }} />
+          <div>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: '#B91C1C' }}>Account verification failed</div>
+            <div style={{ fontSize: '13px', color: '#DC2626', marginTop: '2px' }}>Your seller application was not approved. Contact support for more information.</div>
+          </div>
+        </div>
+      )}
+      {kycStatus === 'approved' && !stripeOnboarded && (
+        <div style={{ background: '#EEF2FF', border: '1px solid #C7D2FE', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+          <div>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: '#3730A3' }}>Complete your Stripe setup to receive payouts</div>
+            <div style={{ fontSize: '13px', color: '#4F46E5', marginTop: '2px' }}>Connect your bank account to start earning from template sales.</div>
+          </div>
+          <a
+            href={`https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_STRIPE_CLIENT_ID ?? 'ca_demo'}&scope=read_write&redirect_uri=${encodeURIComponent((process.env.NEXT_PUBLIC_APP_URL ?? 'https://marketplace.ai') + '/auth/stripe-callback')}&state=${profileId}`}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: '#4F46E5', color: '#FFFFFF', borderRadius: '8px', fontSize: '13px', fontWeight: 700, textDecoration: 'none', whiteSpace: 'nowrap' as const, flexShrink: 0 }}
+          >
+            <ExternalLink size={14} />
+            Complete Stripe Setup
+          </a>
+        </div>
+      )}
+
       {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
         {stats.map(({ label, value, icon: Icon, color, bg }) => (
@@ -121,13 +161,22 @@ export default async function DashboardPage() {
             <div style={{ padding: '48px 20px', textAlign: 'center' }}>
               <Package size={32} color="#E7E5E4" style={{ margin: '0 auto 12px' }} />
               <p style={{ fontSize: '14px', color: '#A8A29E' }}>No templates yet.</p>
-              <Link href="/dashboard/templates/new" style={{
-                display: 'inline-block', marginTop: '12px',
-                padding: '8px 16px', background: '#4F46E5', color: '#FFFFFF',
-                borderRadius: '8px', fontSize: '13px', fontWeight: 600, textDecoration: 'none',
-              }}>
-                Upload your first template
-              </Link>
+              <button
+                disabled={kycStatus !== 'approved'}
+                onClick={() => { if (kycStatus === 'approved') window.location.href = '/dashboard/templates/new'; }}
+                style={{
+                  display: 'inline-block', marginTop: '12px',
+                  padding: '8px 16px',
+                  background: kycStatus !== 'approved' ? '#E7E5E4' : '#4F46E5',
+                  color: kycStatus !== 'approved' ? '#A8A29E' : '#FFFFFF',
+                  borderRadius: '8px', fontSize: '13px', fontWeight: 600,
+                  border: 'none', cursor: kycStatus !== 'approved' ? 'not-allowed' : 'pointer',
+                  fontFamily: 'var(--font-family-ui)',
+                }}
+                title={kycStatus !== 'approved' ? 'Account must be approved before publishing' : undefined}
+              >
+                Publish
+              </button>
             </div>
           ) : (
             <div>

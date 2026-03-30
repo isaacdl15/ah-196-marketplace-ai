@@ -31,7 +31,8 @@ const NAV_MAIN = [
 ];
 
 const NAV_ADMIN = [
-  { href: '/admin', label: 'Admin overview', icon: ShieldCheck },
+  { href: '/admin/dashboard', label: 'Admin overview', icon: ShieldCheck },
+  { href: '/admin/sellers', label: 'Seller Approvals', icon: Users },
   { href: '/admin/waitlist', label: 'Waitlist', icon: ListChecks },
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/templates', label: 'All Templates', icon: TrendingUp },
