@@ -21,6 +21,9 @@ CREATE TABLE IF NOT EXISTS mp_profiles (
 CREATE INDEX IF NOT EXISTS mp_profiles_user_id_idx ON mp_profiles(user_id);
 CREATE INDEX IF NOT EXISTS mp_profiles_username_idx ON mp_profiles(username);
 
+-- BUGFIX #198: ON CONFLICT (user_id) requires a UNIQUE constraint on user_id
+ALTER TABLE mp_profiles ADD CONSTRAINT mp_profiles_user_id_unique UNIQUE (user_id);
+
 -- mp_templates: marketplace template listings
 CREATE TABLE IF NOT EXISTS mp_templates (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -189,8 +192,10 @@ DO $$ BEGIN
 END $$;
 
 -- Auto-create mp_profiles on auth.users INSERT
+-- BUGFIX #198: Added EXCEPTION handler so trigger errors don't block user creation;
+-- added SET search_path = public for security best practice
 CREATE OR REPLACE FUNCTION handle_new_user()
-RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
   uname TEXT;
 BEGIN
@@ -209,6 +214,9 @@ BEGIN
   )
   ON CONFLICT (user_id) DO NOTHING;
 
+  RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+  RAISE LOG 'handle_new_user error: % %', SQLERRM, SQLSTATE;
   RETURN NEW;
 END;
 $$;

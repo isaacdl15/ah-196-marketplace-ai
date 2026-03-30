@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { Trophy, Users, Gift } from 'lucide-react';
+import { Trophy, Users, Gift, Zap, Crown } from 'lucide-react';
 
 export const metadata = {
   title: 'Referral Leaderboard — marketplace.ai',
@@ -53,14 +53,14 @@ export default async function ReferralsPage() {
     }
   }
 
-  const medals = ['🥇', '🥈', '🥉'];
+  const medals = ['1st', '2nd', '3rd'];
 
   return (
     <div style={{ minHeight: '100vh', background: '#FAFAF9', padding: '0' }}>
       {/* Header */}
       <div style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', color: '#FFFFFF', padding: '60px 24px', textAlign: 'center' }}>
         <div style={{ maxWidth: '640px', margin: '0 auto' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏆</div>
+          <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}><Trophy size={48} color="rgba(255,255,255,0.9)" /></div>
           <h1 style={{
             fontSize: '36px', fontWeight: 800, marginBottom: '12px',
             fontFamily: 'var(--font-family-display)', lineHeight: 1.2,
@@ -73,12 +73,12 @@ export default async function ReferralsPage() {
 
           <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '32px', flexWrap: 'wrap' }}>
             {[
-              { icon: '🎁', label: '1+ referrals', desc: 'Early access' },
-              { icon: '⚡', label: '5+ referrals', desc: 'Free Pro template' },
-              { icon: '👑', label: '10+ referrals', desc: 'Lifetime discount' },
+              { icon: <Gift size={22} />, label: '1+ referrals', desc: 'Early access' },
+              { icon: <Zap size={22} />, label: '5+ referrals', desc: 'Free Pro template' },
+              { icon: <Crown size={22} />, label: '10+ referrals', desc: 'Lifetime discount' },
             ].map(({ icon, label, desc }) => (
               <div key={label} style={{ padding: '14px 20px', background: 'rgba(255,255,255,0.15)', borderRadius: '12px', minWidth: '130px' }}>
-                <div style={{ fontSize: '24px', marginBottom: '4px' }}>{icon}</div>
+                <div style={{ marginBottom: '4px', display: 'flex', justifyContent: 'center' }}>{icon}</div>
                 <div style={{ fontSize: '13px', fontWeight: 700 }}>{label}</div>
                 <div style={{ fontSize: '12px', opacity: 0.75 }}>{desc}</div>
               </div>

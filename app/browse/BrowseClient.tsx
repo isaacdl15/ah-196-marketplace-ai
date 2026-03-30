@@ -414,7 +414,7 @@ export default function BrowseClient({
 
         {templates.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 24px' }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+            <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}><Search size={48} color="#A8A29E" /></div>
             <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1C1917', marginBottom: '8px' }}>No templates found</h3>
             <p style={{ fontSize: '14px', color: '#57534E' }}>Try a different category or search term.</p>
           </div>

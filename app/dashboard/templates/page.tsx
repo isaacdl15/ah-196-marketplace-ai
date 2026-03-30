@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
-import { Plus, ExternalLink, Edit } from 'lucide-react';
+import { Plus, ExternalLink, Edit, Package } from 'lucide-react';
 
 const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   published: { bg: '#F0FDF4', text: '#16A34A' },
@@ -51,7 +51,7 @@ export default async function TemplatesPage() {
       <div style={{ background: '#FFFFFF', border: '1px solid #E7E5E4', borderRadius: '16px', overflow: 'hidden' }}>
         {list.length === 0 ? (
           <div style={{ padding: '72px 24px', textAlign: 'center' }}>
-            <div style={{ fontSize: '40px', marginBottom: '16px' }}>📦</div>
+            <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}><Package size={40} color="#A8A29E" /></div>
             <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1C1917', marginBottom: '8px' }}>No templates yet</h3>
             <p style={{ fontSize: '14px', color: '#57534E', marginBottom: '20px' }}>
               Upload your first template and start earning today.
