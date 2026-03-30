@@ -5,12 +5,12 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public routes — always allowed
-  const publicPaths = ['/', '/browse', '/privacy', '/terms', '/auth', '/template', '/templates', '/referrals', '/api', '/seller', '/checkout'];
+  const publicPaths = ['/', '/browse', '/privacy', '/terms', '/auth', '/template', '/templates', '/referrals', '/api', '/seller/signup', '/seller/verify-email', '/checkout'];
   const isPublic = publicPaths.some(p => pathname === p || pathname.startsWith(p + '/'));
   if (isPublic) return NextResponse.next();
 
-  // Protected: /dashboard and /admin
-  const isProtected = pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/onboarding');
+  // Protected: /dashboard, /admin, /seller, /onboarding
+  const isProtected = pathname.startsWith('/dashboard') || pathname.startsWith('/admin') || pathname.startsWith('/onboarding') || pathname === '/seller' || pathname.startsWith('/seller/');
   if (!isProtected) return NextResponse.next();
 
   // Check session
