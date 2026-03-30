@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import {
-  LayoutDashboard, Link2, Package, DollarSign, BarChart3, Settings,
-  ShieldCheck, Users, TrendingUp, ArrowLeft, MoreHorizontal, X
+  LayoutDashboard, Package, DollarSign, BarChart3, Settings,
+  ShieldCheck, Users, TrendingUp, CreditCard, X, LogOut, ShoppingBag, Upload
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -22,17 +22,18 @@ interface SidebarProps {
 
 const NAV_MAIN = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
-  { href: '/dashboard/links', label: 'My links', icon: Link2 },
-  { href: '/dashboard/products', label: 'Products', icon: Package },
-  { href: '/dashboard/earnings', label: 'Earnings', icon: DollarSign },
+  { href: '/dashboard/templates', label: 'Templates', icon: Package },
   { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3 },
+  { href: '/dashboard/earnings', label: 'Earnings', icon: DollarSign },
+  { href: '/dashboard/payouts', label: 'Payouts', icon: CreditCard },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 const NAV_ADMIN = [
   { href: '/admin', label: 'Admin overview', icon: ShieldCheck },
   { href: '/admin/waitlist', label: 'Waitlist', icon: Users },
-  { href: '/admin/utm', label: 'UTM Attribution', icon: TrendingUp },
+  { href: '/admin/users', label: 'Users', icon: Users },
+  { href: '/admin/templates', label: 'All Templates', icon: TrendingUp },
 ];
 
 function initials(name: string) {
@@ -55,9 +56,11 @@ export default function Sidebar({ creator, open, onClose }: SidebarProps) {
     return pathname.startsWith(href);
   };
 
+  const PRIMARY = '#4F46E5';
+  const PRIMARY_BG = '#EEF2FF';
+
   return (
     <>
-      {/* Mobile overlay */}
       {open && (
         <div
           onClick={onClose}
@@ -70,65 +73,81 @@ export default function Sidebar({ creator, open, onClose }: SidebarProps) {
         style={{ zIndex: 30 }}
       >
         {/* Logo */}
-        <div style={{ padding: '0 20px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E8DDD2' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '22px', fontWeight: 700, fontStyle: 'italic', color: '#1A1208', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ color: '#C75B40' }}>S</span>irena
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C75B40" strokeWidth="1.5" opacity="0.8">
-              <path d="M12 2 C8 2 4 6 4 10 C4 14 7 17 10 20 C11 21 12 22 12 22 C12 22 13 21 14 20 C17 17 20 14 20 10 C20 6 16 2 12 2Z" />
-              <path d="M9 18 C8 20 9 22 12 22" />
-              <path d="M15 18 C16 20 15 22 12 22" />
-            </svg>
-          </div>
+        <div style={{ padding: '0 20px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #E7E5E4' }}>
+          <Link href="/browse" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ShoppingBag size={18} color={PRIMARY} />
+            <div style={{ fontFamily: 'var(--font-family-display)', fontSize: '18px', fontWeight: 700, color: '#1C1917' }}>
+              <span style={{ color: PRIMARY }}>marketplace</span>
+              <span style={{ color: '#A8A29E' }}>.ai</span>
+            </div>
+          </Link>
           {onClose && (
-            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9E8B7A', padding: '4px', display: 'none' }} className="sidebar-close">
+            <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A8A29E', padding: '4px', display: 'none' }} className="sidebar-close">
               <X size={18} />
             </button>
           )}
         </div>
 
+        {/* Upload CTA */}
+        <div style={{ padding: '12px' }}>
+          <Link href="/dashboard/templates/new" style={{ textDecoration: 'none' }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '10px 12px', background: PRIMARY, borderRadius: '10px',
+              color: '#FFFFFF', fontSize: '13px', fontWeight: 600,
+              fontFamily: 'var(--font-family-ui)',
+            }}>
+              <Upload size={14} />
+              Upload Template
+            </div>
+          </Link>
+        </div>
+
         {/* Main nav */}
-        <div style={{ flex: 1, padding: '8px 0', overflowY: 'auto' }}>
-          <div style={{ padding: '16px 12px 4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#9E8B7A' }}>
-            Creator
+        <div style={{ flex: 1, padding: '4px 0', overflowY: 'auto' }}>
+          <div style={{ padding: '12px 12px 4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#A8A29E' }}>
+            Seller
           </div>
           {NAV_MAIN.map(({ href, label, icon: Icon }) => (
             <Link key={href} href={href}
               onClick={onClose}
               style={{
-                display: 'flex', alignItems: 'center', gap: '10px', height: '40px',
-                padding: '0 12px', margin: '0 8px', borderRadius: '8px',
+                display: 'flex', alignItems: 'center', gap: '10px', height: '38px',
+                padding: '0 12px', margin: '1px 8px', borderRadius: '8px',
                 textDecoration: 'none', transition: '120ms ease',
-                background: isActive(href) ? '#FDF0EC' : 'transparent',
-                color: isActive(href) ? '#C75B40' : '#5A4839',
+                background: isActive(href) ? PRIMARY_BG : 'transparent',
+                color: isActive(href) ? PRIMARY : '#57534E',
                 fontWeight: isActive(href) ? 600 : 500,
-                fontSize: '14px', fontFamily: 'var(--font-ui)',
+                fontSize: '13px', fontFamily: 'var(--font-family-ui)',
               }}
-              onMouseEnter={e => { if (!isActive(href)) { (e.currentTarget as HTMLElement).style.background = '#F5EEE6'; (e.currentTarget as HTMLElement).style.color = '#1A1208'; } }}
-              onMouseLeave={e => { if (!isActive(href)) { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#5A4839'; } }}
+              onMouseEnter={e => { if (!isActive(href)) { (e.currentTarget as HTMLElement).style.background = '#F5F5F4'; } }}
+              onMouseLeave={e => { if (!isActive(href)) { (e.currentTarget as HTMLElement).style.background = 'transparent'; } }}
             >
-              <Icon size={18} strokeWidth={isActive(href) ? 2 : 1.5} color={isActive(href) ? '#C75B40' : undefined} />
+              <Icon size={16} strokeWidth={isActive(href) ? 2 : 1.5} color={isActive(href) ? PRIMARY : undefined} />
               {label}
             </Link>
           ))}
 
-          {/* Admin section */}
           {creator.is_admin && (
             <>
-              <div style={{ padding: '16px 12px 4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#9E8B7A', marginTop: '8px' }}>
+              <div style={{ padding: '16px 12px 4px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: '#A8A29E', marginTop: '8px' }}>
                 Admin
               </div>
               {NAV_ADMIN.map(({ href, label, icon: Icon }) => (
                 <Link key={href} href={href} onClick={onClose}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: '10px', height: '40px',
-                    padding: '0 12px', margin: '0 8px', borderRadius: '8px',
+                    display: 'flex', alignItems: 'center', gap: '10px', height: '38px',
+                    padding: '0 12px', margin: '1px 8px', borderRadius: '8px',
                     textDecoration: 'none', transition: '120ms ease',
-                    background: isActive(href) ? '#FDF0EC' : 'transparent',
-                    color: isActive(href) ? '#C75B40' : '#5A4839',
+                    background: isActive(href) ? PRIMARY_BG : 'transparent',
+                    color: isActive(href) ? PRIMARY : '#57534E',
                     fontWeight: isActive(href) ? 600 : 500,
-                    fontSize: '14px', fontFamily: 'var(--font-ui)',
-                  }}>
-                  <Icon size={18} strokeWidth={isActive(href) ? 2 : 1.5} color={isActive(href) ? '#C75B40' : undefined} />
+                    fontSize: '13px', fontFamily: 'var(--font-family-ui)',
+                  }}
+                  onMouseEnter={e => { if (!isActive(href)) { (e.currentTarget as HTMLElement).style.background = '#F5F5F4'; } }}
+                  onMouseLeave={e => { if (!isActive(href)) { (e.currentTarget as HTMLElement).style.background = 'transparent'; } }}
+                >
+                  <Icon size={16} strokeWidth={isActive(href) ? 2 : 1.5} color={isActive(href) ? PRIMARY : undefined} />
                   {label}
                 </Link>
               ))}
@@ -137,19 +156,33 @@ export default function Sidebar({ creator, open, onClose }: SidebarProps) {
         </div>
 
         {/* Bottom profile */}
-        <div style={{ borderTop: '1px solid #E8DDD2', padding: '16px' }}>
+        <div style={{ borderTop: '1px solid #E7E5E4', padding: '14px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '9999px', background: '#F5D1C5', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '14px', fontWeight: 700, color: '#C75B40', fontFamily: 'var(--font-ui)' }}>
+            <div style={{
+              width: '34px', height: '34px', borderRadius: '9999px',
+              background: PRIMARY_BG,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, fontSize: '13px', fontWeight: 700, color: PRIMARY,
+              fontFamily: 'var(--font-family-ui)',
+            }}>
               {initials(creator.display_name || creator.username)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '14px', fontWeight: 600, color: '#1A1208', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{creator.display_name}</div>
-              <span style={{ display: 'inline-block', background: '#F5EEE6', color: '#C75B40', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', padding: '2px 8px', borderRadius: '9999px' }}>
-                {creator.plan === 'pro' ? 'Pro' : 'Creator'}
+              <div style={{ fontSize: '13px', fontWeight: 600, color: '#1C1917', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {creator.display_name}
+              </div>
+              <span style={{ display: 'inline-block', background: PRIMARY_BG, color: PRIMARY, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', padding: '2px 8px', borderRadius: '9999px' }}>
+                Seller
               </span>
             </div>
-            <button onClick={handleLogout} title="Sign out" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9E8B7A', padding: '4px' }}>
-              <MoreHorizontal size={16} />
+            <button
+              onClick={handleLogout}
+              title="Sign out"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#A8A29E', padding: '4px' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#DC2626')}
+              onMouseLeave={e => (e.currentTarget.style.color = '#A8A29E')}
+            >
+              <LogOut size={15} />
             </button>
           </div>
         </div>
